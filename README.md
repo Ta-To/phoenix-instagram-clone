@@ -1,4 +1,4 @@
-# InstagramClone
+# Practice based on InstagramClone
 
 refs: https://dev.to/elixirprogrammer/let-s-build-an-instagram-clone-with-the-petal-phoenix-elixir-tailwindcss-alpinejs-liveview-stack-263n
 
