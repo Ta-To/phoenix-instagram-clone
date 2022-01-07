@@ -26,7 +26,8 @@ config :instagram_clone, InstagramCloneWeb.Endpoint,
   secret_key_base: "jXYRxjoG2b5d0c8yw1KYVRlQKXs9lZ8hLtl64Sz5XJwZyXSXpthJF3xswg/tXOOr",
   watchers: [
     # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
 # ## SSL Support
