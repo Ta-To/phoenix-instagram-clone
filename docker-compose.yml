@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  app:
+    init: true
+    build: ./phoenix
+    container_name: phx-instagram
+    shm_size: 512m
+    command: tail -f /dev/null
+    env_file:
+      - ./.env
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "100"
+    ports:
+      - "80:4000"
+    volumes:
+      - ./:/srv/
+
+  db:
+    image: postgres
+    container_name: phx-instagram-db
+    shm_size: 512m
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=db
+    volumes:
+      - ../../postgresql/phx-instagram:/var/lib/postgresql/data
