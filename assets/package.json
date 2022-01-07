@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "alpinejs": "^2.8.2",
     "daisyui": "^1.21.0"
   }
 }
