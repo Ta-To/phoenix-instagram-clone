@@ -12,11 +12,14 @@ defmodule  InstagramCloneWeb.UserLive.Settings  do
   def  mount(_params, session, socket) do
     socket =  assign_defaults(session, socket)
     changeset = Accounts.change_user(socket.assigns.current_user)
+    settings_path = Routes.live_path(socket, __MODULE__)
+    pass_settings_path = Routes.live_path(socket, InstagramCloneWeb.UserLive.PassSettings)
 
     {:ok,
       socket
       |> assign(changeset: changeset)
       |> assign(page_title: "Edit Profile")
+      |> assign(settings_path: settings_path, pass_settings_path: pass_settings_path)
       |> allow_upload(:avatar_url,
         accept: @extension_whitelist,
         max_file_size: 9_000_000,

@@ -1,4 +1,9 @@
 <section class="border-2 flex" x-data={alpine_attrs(@current_user)}>
+  <.live_component id="sidebar" module={InstagramCloneWeb.UserLive.SettingsSidebarComponent}
+    settings_path={@settings_path}
+    pass_settings_path={@pass_settings_path}
+    current_uri_path={@current_uri_path} />
+
   <div class="w-full py-8">
     <%= for {_ref, err} <- @uploads.avatar_url.errors do %>
       <p class="text-red-500 w-full text-center">
@@ -19,7 +24,7 @@
             phx_change="upload_avatar">
             <%= live_file_input @uploads.avatar_url, class: "cursor-pointer relative block opacity-0 z-40 -left-24"  %>
             <div class="text-center absolute top-0 left-0 m-auto">
-              <span class="font-semibold text-sm text-light-blue-500">
+              <span class="font-semibold text-sm text-sky-500">
                 Change Profile Photo
               </span>
             </div>
