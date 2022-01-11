@@ -222,7 +222,7 @@ defmodule InstagramClone.Accounts do
 
   def update_user(user, attrs) do
     user
-    |> User.registration_changeset(attrs, register_user: false)
+    |> User.registration_changeset(attrs, user_to_register: false)
     |> Repo.update()
   end
 

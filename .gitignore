@@ -32,6 +32,9 @@ instagram_clone-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# uploaded images
+/priv/static/uploads/
+
 # secret
 .env
 
