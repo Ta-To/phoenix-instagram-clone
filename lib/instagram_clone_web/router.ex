@@ -79,6 +79,8 @@ defmodule InstagramCloneWeb.Router do
     get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
     live "/accounts/edit", UserLive.Settings
     live "/accounts/password/change", UserLive.PassSettings
+    live "/:username/following", UserLive.Profile, :following
+    live "/:username/followers", UserLive.Profile, :followers
   end
 
   scope "/", InstagramCloneWeb do

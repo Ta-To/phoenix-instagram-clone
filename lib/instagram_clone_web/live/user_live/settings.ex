@@ -29,6 +29,13 @@ defmodule InstagramCloneWeb.UserLive.Settings do
   end
 
   @impl true
+  def handle_params(_params, uri, socket) do
+    {:noreply,
+      socket
+      |> assign(current_uri_path: URI.parse(uri).path)}
+  end
+
+  @impl true
   def handle_event("validate", %{"user" => user_params}, socket) do
     changeset =
       socket.assigns.current_user

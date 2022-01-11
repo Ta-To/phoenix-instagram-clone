@@ -1,10 +1,9 @@
 <%= if @current_user do %>
 
-<%= link "Log Out", to: Routes.user_session_path(@socket, :delete), method: :delete %>
 <h1>User Logged In Homepage</h1>
 
 <% else %>
 
-<.live_component module={InstagramCloneWeb.PageComponent} id="page_component" changeset={@changeset} trigger_submit={@trigger_submit} />
+<.live_component module={InstagramCloneWeb.PageComponent} id="page_component" />
 
 <% end %>
