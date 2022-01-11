@@ -94,6 +94,10 @@ defmodule InstagramClone.Accounts do
     User.registration_changeset(user, attrs, hash_password: false)
   end
 
+  def change_user(user, attrs \\  %{}) do
+    User.registration_changeset(user, attrs,  register_user:  false)
+  end
+
   ## Settings
 
   @doc """
@@ -214,6 +218,12 @@ defmodule InstagramClone.Accounts do
       {:ok, %{user: user}} -> {:ok, user}
       {:error, :user, changeset, _} -> {:error, changeset}
     end
+  end
+
+  def update_user(user, attrs) do
+    user
+    |> User.registration_changeset(attrs, register_user: false)
+    |> Repo.update()
   end
 
   ## Session

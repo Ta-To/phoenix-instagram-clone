@@ -20,8 +20,6 @@ defmodule InstagramCloneWeb.PageLive do
       %User{}
       |> User.registration_changeset(user_params)
       |> Map.put(:action, :validate)
-    # TODO: convert phx-...
-    :timer.sleep(9000)
     {:noreply, socket |> assign(changeset: changeset)}
   end
 
