@@ -38,7 +38,9 @@ defmodule InstagramClone.Accounts.User do
     |> cast(attrs, [:email, :password, :username, :full_name, :avatar_url, :bio, :website])
     |> validate_required([:username, :full_name])
     |> validate_length(:username, min: 5, max: 30)
-    |> validate_format(:username, ~r/^[a-zA-Z0-9_.-]*$/, message: "Please use letters and numbers without space(only characters allowed _ . -)")
+    |> validate_format(:username, ~r/^[a-zA-Z0-9_.-]*$/,
+      message: "Please use letters and numbers without space(only characters allowed _ . -)"
+    )
     |> unique_constraint(:username)
     |> unsafe_validate_unique(:username, InstagramClone.Repo)
     |> validate_length(:full_name, min: 4, max: 30)
@@ -57,6 +59,7 @@ defmodule InstagramClone.Accounts.User do
 
   defp validate_password(changeset, opts) do
     user_to_register? = Keyword.get(opts, :user_to_register, true)
+
     if user_to_register? do
       changeset
       |> validate_required([:password])

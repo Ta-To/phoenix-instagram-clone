@@ -56,9 +56,9 @@ defmodule InstagramCloneWeb do
       def handle_info(%{event: "logout_user", payload: %{user: %User{id: id}}}, socket) do
         with %User{id: ^id} <- socket.assigns.current_user do
           {:noreply,
-            socket
-            |> redirect(to: "/")
-            |> put_flash(:info, "Logged out successfully.")}
+           socket
+           |> redirect(to: "/")
+           |> put_flash(:info, "Logged out successfully.")}
         else
           _any -> {:noreply, socket}
         end
@@ -67,8 +67,8 @@ defmodule InstagramCloneWeb do
       @impl true
       def handle_params(_unsigned_params, uri, socket) do
         {:noreply,
-          socket
-          |> assign(current_uri_path: URI.parse(uri).path)}
+         socket
+         |> assign(current_uri_path: URI.parse(uri).path)}
       end
     end
   end

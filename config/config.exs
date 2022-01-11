@@ -51,7 +51,6 @@ config :phoenix, :json_library, Jason
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
 
-
 # tailwind
 config :tailwind,
   version: "3.0.10",

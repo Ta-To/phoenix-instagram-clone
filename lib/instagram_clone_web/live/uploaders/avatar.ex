@@ -47,7 +47,7 @@ defmodule InstagramClone.Uploaders.Avatar do
     url = String.replace_leading(old_avatar_url, "/uploads/", "")
     path = [@upload_directory_path, url] |> Path.join()
 
-    if File.exists?(path),  do: File.rm!(path)
+    if File.exists?(path), do: File.rm!(path)
   end
 
   # Resize the file with a given path, destination, and size

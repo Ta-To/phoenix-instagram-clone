@@ -11,6 +11,7 @@ defmodule InstagramCloneWeb.LiveHelpers do
       assign_new(socket, :current_user, fn ->
         find_current_user(session)
       end)
+
     socket
   end
 
