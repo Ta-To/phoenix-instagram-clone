@@ -61,7 +61,7 @@ config :instagram_clone, InstagramCloneWeb.Endpoint,
       ~r"priv/static/[^uploads].*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
       ~r"lib/instagram_clone_web/(live|views)/.*(ex)$",
-      ~r"lib/instagram_clone_web/templates/.*(eex)$",
+      ~r"lib/instagram_clone_web/templates/.*(eex)$"
     ]
   ]
 

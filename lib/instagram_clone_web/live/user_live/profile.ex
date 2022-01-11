@@ -72,12 +72,13 @@ defmodule InstagramCloneWeb.UserLive.Profile do
 
   defp assign_posts(socket) do
     socket
-    |> assign(posts:
-      Posts.list_profile_posts(
-        page: socket.assigns.page,
-        per_page: socket.assigns.per_page,
-        user_id: socket.assigns.user.id
-      )
+    |> assign(
+      posts:
+        Posts.list_profile_posts(
+          page: socket.assigns.page,
+          per_page: socket.assigns.per_page,
+          user_id: socket.assigns.user.id
+        )
     )
   end
 

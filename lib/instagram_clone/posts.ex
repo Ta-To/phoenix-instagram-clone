@@ -38,7 +38,7 @@ defmodule InstagramClone.Posts do
     |> limit(^per_page)
     |> offset(^((page - 1) * per_page))
     |> order_by(desc: :id)
-    |> Repo.all
+    |> Repo.all()
   end
 
   @doc """
@@ -86,7 +86,7 @@ defmodule InstagramClone.Posts do
     update_posts_count = from(u in User, where: u.id == ^user.id)
 
     Ecto.Multi.new()
-    |> Ecto.Multi.update_all(:update_posts_count, update_posts_count, inc: [posts_count:  1])
+    |> Ecto.Multi.update_all(:update_posts_count, update_posts_count, inc: [posts_count: 1])
     |> Ecto.Multi.insert(:post, changeset)
     |> Repo.transaction()
   end
