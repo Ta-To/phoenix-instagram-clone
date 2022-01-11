@@ -17,13 +17,6 @@ defmodule InstagramCloneWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", InstagramCloneWeb do
-    pipe_through :browser
-
-    live "/", PageLive
-    live "/:username", UserLive.Profile
-  end
-
   # Other scopes may use custom stacks.
   # scope "/api", InstagramCloneWeb do
   #   pipe_through :api
@@ -81,10 +74,15 @@ defmodule InstagramCloneWeb.Router do
     live "/accounts/password/change", UserLive.PassSettings
     live "/:username/following", UserLive.Profile, :following
     live "/:username/followers", UserLive.Profile, :followers
+    live "/p/new", PostLive.New
   end
 
   scope "/", InstagramCloneWeb do
     pipe_through [:browser]
+
+    live "/", PageLive
+    live "/:username", UserLive.Profile
+    live "/p/:id", PostLive.Show
 
     delete "/users/log_out", UserSessionController, :delete
     get "/users/confirm", UserConfirmationController, :new

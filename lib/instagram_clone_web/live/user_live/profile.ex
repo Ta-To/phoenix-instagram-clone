@@ -2,6 +2,7 @@ defmodule InstagramCloneWeb.UserLive.Profile do
   use InstagramCloneWeb, :live_view
 
   alias InstagramClone.Accounts
+  alias InstagramClone.Posts
   alias InstagramCloneWeb.UserLive.FollowComponent
 
   @impl true
@@ -9,10 +10,15 @@ defmodule InstagramCloneWeb.UserLive.Profile do
     socket = assign_defaults(session, socket)
     user = Accounts.profile(username)
 
-    {:ok,
-     socket
-     |> assign(user: user)
-     |> assign(page_title: "#{user.full_name} (@#{user.username})")}
+    {
+      :ok,
+      socket
+      |> assign(page: 1, per_page: 15)
+      |> assign(user: user)
+      |> assign(page_title: "#{user.full_name} (@#{user.username})")
+      |> assign_posts(),
+      temporary_assigns: [posts: []]
+    }
   end
 
   @impl true
@@ -23,6 +29,11 @@ defmodule InstagramCloneWeb.UserLive.Profile do
   @impl true
   def handle_info({FollowComponent, :update_totals, updated_user}, socket) do
     {:noreply, apply_msg_action(socket, socket.assigns.live_action, updated_user)}
+  end
+
+  @impl true
+  def handle_event("load-more-profile-posts", _, socket) do
+    {:noreply, socket |> load_posts}
   end
 
   defp apply_msg_action(socket, :follow_component, updated_user) do
@@ -56,6 +67,32 @@ defmodule InstagramCloneWeb.UserLive.Profile do
       current_user && current_user == user -> :edit_profile
       current_user -> :follow_component
       true -> :login_btn
+    end
+  end
+
+  defp assign_posts(socket) do
+    socket
+    |> assign(posts:
+      Posts.list_profile_posts(
+        page: socket.assigns.page,
+        per_page: socket.assigns.per_page,
+        user_id: socket.assigns.user.id
+      )
+    )
+  end
+
+  defp load_posts(socket) do
+    total_posts = socket.assigns.user.posts_count
+    page = socket.assigns.page
+    per_page = socket.assigns.per_page
+    total_pages = ceil(total_posts / per_page)
+
+    if page == total_pages do
+      socket
+    else
+      socket
+      |> update(:page, &(&1 + 1))
+      |> assign_posts()
     end
   end
 end
