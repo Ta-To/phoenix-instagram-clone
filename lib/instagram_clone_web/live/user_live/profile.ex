@@ -10,9 +10,9 @@ defmodule InstagramCloneWeb.UserLive.Profile do
     user = Accounts.profile(username)
 
     {:ok,
-      socket
-      |> assign(user: user)
-      |> assign(page_title: "#{user.full_name} (@#{user.username})")}
+     socket
+     |> assign(user: user)
+     |> assign(page_title: "#{user.full_name} (@#{user.username})")}
   end
 
   @impl true
@@ -58,5 +58,4 @@ defmodule InstagramCloneWeb.UserLive.Profile do
       true -> :login_btn
     end
   end
-
 end

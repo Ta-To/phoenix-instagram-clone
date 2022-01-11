@@ -10,8 +10,8 @@ defmodule InstagramCloneWeb.PageLive do
   @impl true
   def handle_params(_params, _uri, socket) do
     {:noreply,
-      socket
-      |> assign(live_action: apply_action(socket.assigns.current_user))}
+     socket
+     |> assign(live_action: apply_action(socket.assigns.current_user))}
   end
 
   defp apply_action(current_user) do

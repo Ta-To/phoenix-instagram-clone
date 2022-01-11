@@ -23,7 +23,7 @@ defmodule InstagramCloneWeb.LiveHelpers do
   """
   def live_modal(socket, component, opts) do
     path = Keyword.fetch!(opts, :return_to)
-    width = Keyword.fetch!(opts,  :width)
+    width = Keyword.fetch!(opts, :width)
     modal_opts = [id: :modal, return_to: path, width: width, component: component, opts: opts]
     live_component(socket, InstagramCloneWeb.ModalComponent, modal_opts)
   end

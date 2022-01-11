@@ -31,8 +31,8 @@ defmodule InstagramCloneWeb.UserLive.Settings do
   @impl true
   def handle_params(_params, uri, socket) do
     {:noreply,
-      socket
-      |> assign(current_uri_path: URI.parse(uri).path)}
+     socket
+     |> assign(current_uri_path: URI.parse(uri).path)}
   end
 
   @impl true

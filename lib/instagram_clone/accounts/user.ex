@@ -16,8 +16,8 @@ defmodule InstagramClone.Accounts.User do
     field :website, :string
     field :followers_count, :integer, default: 0
     field :following_count, :integer, default: 0
-    has_many :following, Follows,  foreign_key:  :follower_id
-    has_many :followers, Follows,  foreign_key:  :followed_id
+    has_many :following, Follows, foreign_key: :follower_id
+    has_many :followers, Follows, foreign_key: :followed_id
 
     timestamps()
   end
@@ -44,11 +44,13 @@ defmodule InstagramClone.Accounts.User do
     |> cast(attrs, [:email, :password, :username, :full_name, :avatar_url, :bio, :website])
     |> validate_required([:username, :full_name])
     |> validate_length(:username, min: 5, max: 30)
-    |> validate_format(:username, ~r/^[a-zA-Z0-9_.-]*$/, message: "Please use letters and numbers without space(only characters allowed _ . -)")
+    |> validate_format(:username, ~r/^[a-zA-Z0-9_.-]*$/,
+      message: "Please use letters and numbers without space(only characters allowed _ . -)"
+    )
     |> unique_constraint(:username)
     |> unsafe_validate_unique(:username, InstagramClone.Repo)
     |> validate_length(:full_name, min: 4, max: 255)
-    |> validate_format(:full_name,  ~r/^[a-zA-Z0-9 ]*$/,  message:  "Please use letters and numbers")
+    |> validate_format(:full_name, ~r/^[a-zA-Z0-9 ]*$/, message: "Please use letters and numbers")
     |> validate_website_schemes()
     |> validate_website_authority()
     |> validate_email()
@@ -65,6 +67,7 @@ defmodule InstagramClone.Accounts.User do
   defp validate_website_authority(changeset) do
     validate_change(changeset, :website, fn :website, website ->
       authority = URI.parse(website).authority
+
       if String.match?(authority, ~r/^[a-zA-Z0-9.-]*$/) do
         []
       else

@@ -94,8 +94,8 @@ defmodule InstagramClone.Accounts do
     User.registration_changeset(user, attrs, hash_password: false)
   end
 
-  def change_user(user, attrs \\  %{}) do
-    User.registration_changeset(user, attrs,  register_user:  false)
+  def change_user(user, attrs \\ %{}) do
+    User.registration_changeset(user, attrs, register_user: false)
   end
 
   ## Settings
@@ -209,6 +209,7 @@ defmodule InstagramClone.Accounts do
     |> User.password_changeset(attrs)
     |> User.validate_current_password(password)
     |> Repo.update()
+
     # changeset =
     #   user
     #   |> User.password_changeset(attrs)
@@ -366,7 +367,6 @@ defmodule InstagramClone.Accounts do
     end
   end
 
-
   def log_out_user(token) do
     user = get_user_by_session_token(token)
     # Delete all user tokens
@@ -409,7 +409,7 @@ defmodule InstagramClone.Accounts do
     |> Ecto.Multi.update_all(:update_followers, update_followers_count, inc: [followers_count: 1])
     |> Repo.transaction()
     |> case do
-      {:ok,   %{update_followers: update_followers}} ->
+      {:ok, %{update_followers: update_followers}} ->
         {1, user} = update_followers
         hd(user)
     end
@@ -432,7 +432,7 @@ defmodule InstagramClone.Accounts do
     |> Ecto.Multi.update_all(:update_followers, update_followers_count, inc: [followers_count: -1])
     |> Repo.transaction()
     |> case do
-      {:ok,   %{update_followers: update_followers}} ->
+      {:ok, %{update_followers: update_followers}} ->
         {1, user} = update_followers
         hd(user)
     end
@@ -442,7 +442,7 @@ defmodule InstagramClone.Accounts do
   Returns nil if not found
   """
   def following?(follower_id, followed_id) do
-    Repo.get_by(Follows, [follower_id: follower_id, followed_id: followed_id])
+    Repo.get_by(Follows, follower_id: follower_id, followed_id: followed_id)
   end
 
   @doc """
