@@ -21,6 +21,7 @@ defmodule InstagramCloneWeb.Router do
     pipe_through :browser
 
     live "/", PageLive
+    live "/:username", UserLive.Profile
   end
 
   # Other scopes may use custom stacks.
