@@ -6,11 +6,11 @@ defmodule InstagramCloneWeb.HeaderNavComponent do
   @impl true
   def mount(socket) do
     {:ok,
-      socket
-      |> assign(while_searching_users?: false)
-      |> assign(users_not_found?: false)
-      |> assign(overflow_y_scroll_ul: "")
-      |> assign(searched_users: [])}
+     socket
+     |> assign(while_searching_users?: false)
+     |> assign(users_not_found?: false)
+     |> assign(overflow_y_scroll_ul: "")
+     |> assign(searched_users: [])}
   end
 
   @impl true
@@ -21,12 +21,11 @@ defmodule InstagramCloneWeb.HeaderNavComponent do
       send(self(), {__MODULE__, :search_users_event, search})
 
       {:noreply,
-        socket
-        |> assign(users_not_found?: false)
-        |> assign(searched_users: [])
-        |> assign(overflow_y_scroll_ul: "")
-        |> assign(while_searching_users?: true)}
+       socket
+       |> assign(users_not_found?: false)
+       |> assign(searched_users: [])
+       |> assign(overflow_y_scroll_ul: "")
+       |> assign(while_searching_users?: true)}
     end
   end
-
 end
