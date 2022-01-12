@@ -42,29 +42,42 @@
       <!-- End Description Section -->
       <% end %>
 
+      <section id="comments" phx-update={@comments_section_update}>
+        <%= for comment <- @comments do %>
+          <.live_component module={InstagramCloneWeb.PostLive.CommentComponent}
+            id={comment.id}
+            current_user={@current_user}
+            comment={comment} />
+        <% end %>
+      </section>
+
+      <button
+        class={"w-full #{@load_more_comments_btn} justify-center pt-2 focus:outline-none"}
+        phx-click="load-more-comments">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </button>
     </div>
 
     <div class="w-full border-t-2">
       <!-- Action icons section -->
       <div class="flex pl-4 pr-2 pt-2">
-        <div class="w-8 h-8 cursor-pointer">
-          <%= if @current_user do %>
-            <.live_component
-              module={InstagramCloneWeb.PostLive.LikeComponent}
+        <%= if @current_user do %>
+          <.live_component module={InstagramCloneWeb.PostLive.LikeComponent}
               id={@post.id}
               liked={@post}
-              w_h="w-8 h-8 focus:outline-none"
+              w_h="w-8 h-8"
               current_user={@current_user} />
-          <% else %>
-            <%= link to: Routes.user_session_path(@socket, :new) do %>
-              <button class="w-8 h-8 focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-              </button>
-            <% end %>
+        <% else %>
+          <%= link to: Routes.user_session_path(@socket, :new) do %>
+            <button class="w-8 h-8 focus:outline-none">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </button>
           <% end %>
-        </div>
+        <% end %>
         <div class="ml-4 w-8 h-8 cursor-pointer">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -89,19 +102,53 @@
       <!-- End Description Section -->
 
       <!-- Comment input section -->
-      <div class="p-2 flex items-center mt-3 border-t-2 border-gray-100">
-        <div class="w-full">
-          <textarea
-            aria-label="Add a comment..."
-            placeholder="Add a comment..."
-            class="w-full border-0 focus:ring-transparent resize-none"
-            autocomplete="off"
-            autocorrect="off"
-            rows="1"></textarea>
+      <%= if @current_user do %>
+        <.form let={f} for={@changeset}
+          action="#"
+          phx_submit="save"
+          class="p-2 flex items-center mt-3 border-t-2 border-gray-100"
+          x_data="{
+            disableSubmit: true,
+            inputText: null,
+            displayCommentBtn: (refs) => {
+              refs.cbtn.classList.remove('opacity-30')
+              refs.cbtn.classList.remove('cursor-not-allowed')
+            },
+            disableCommentBtn: (refs) => {
+              refs.cbtn.classList.add('opacity-30')
+              refs.cbtn.classList.add('cursor-not-allowed')
+            }
+          }">
+          <div class="w-full">
+            <%= textarea f, :body,
+              class: "w-full border-0 focus:ring-transparent resize-none",
+              rows: 1,
+              placeholder: "Add a comment...",
+              aria_label: "Add a comment...",
+              autocorrect: "off",
+              autocomplete: "off",
+              x_model: "inputText",
+              "@input": "[
+                (inputText.length != 0) ? [disableSubmit = false, displayCommentBtn($refs)] : [disableSubmit = true, disableCommentBtn($refs)]
+              ]" %>
+          </div>
+          <div>
+            <%= submit "Post",
+              phx_disable_with: "Posting...",
+              class: "text-light-blue-500 opacity-30 cursor-not-allowed font-bold pb-2 text-sm focus:outline-none",
+              x_ref: "cbtn",
+              "@click": "inputText = null",
+              "x_bind:disabled": "disableSubmit" %>
+          </div>
+        </.form>
+      <% else %>
+        <div class="p-4 flex items-center mt-3 border-t-2 border-gray-100">
+          <%= link "Log in to comment",
+            to: Routes.user_session_path(@socket, :new),
+            class: "text-light-blue-600" %>
         </div>
-        <div><button class="text-light-blue-500 font-bold pb-2 text-sm">Post</button></div>
-      </div>
-    <!-- End Comment input section -->
+      <% end %>
+      <!-- End Comment input section -->
     </div>
   </div>
 
