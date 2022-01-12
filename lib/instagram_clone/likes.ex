@@ -24,9 +24,8 @@ defmodule InstagramClone.Likes do
     |> Repo.transaction()
   end
 
-
   # Returns nil if not found
   def liked?(user_id, liked_id) do
-    Repo.get_by(Like, [user_id: user_id, liked_id: liked_id])
+    Repo.get_by(Like, user_id: user_id, liked_id: liked_id)
   end
 end
