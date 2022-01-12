@@ -21,7 +21,7 @@ defmodule InstagramClone.Comments do
     Repo.all(Comment)
   end
 
-  @doc  """
+  @doc """
   Returns paginated comments sorted by current user id or by id if public
   """
   def list_post_comments(assigns, public: public) do
@@ -36,7 +36,7 @@ defmodule InstagramClone.Comments do
     |> limit(^per_page)
     |> offset(^((page - 1) * per_page))
     |> preload([:user, :likes])
-    |> Repo.all
+    |> Repo.all()
   end
 
   defp get_post_comments_sorting(module, public, user) do
@@ -91,13 +91,16 @@ defmodule InstagramClone.Comments do
   def create_comment(user, post, attrs \\ %{}) do
     update_total_comments = post.__struct__ |> where(id: ^post.id)
     comment_attrs = %Comment{} |> Comment.changeset(attrs)
+
     comment =
       comment_attrs
       |> Ecto.Changeset.put_assoc(:user, user)
       |> Ecto.Changeset.put_assoc(:post, post)
 
     Ecto.Multi.new()
-    |> Ecto.Multi.update_all(:update_total_comments, update_total_comments, inc: [total_comments: 1])
+    |> Ecto.Multi.update_all(:update_total_comments, update_total_comments,
+      inc: [total_comments: 1]
+    )
     |> Ecto.Multi.insert(:comment, comment)
     |> Repo.transaction()
     |> case do
