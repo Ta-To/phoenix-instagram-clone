@@ -55,11 +55,14 @@ defmodule InstagramClone.Posts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_post!(id), do: Repo.get!(Post, id)
+  def get_post!(id) do
+    Repo.get!(Post, id)
+    |> Repo.preload([:user, :likes])
+  end
 
   def get_post_by_url!(id) do
     Repo.get_by!(Post, url_id: id)
-    |> Repo.preload(:user)
+    |> Repo.preload([:user, :likes])
   end
 
   @doc """
