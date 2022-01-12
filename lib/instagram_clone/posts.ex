@@ -8,6 +8,8 @@ defmodule InstagramClone.Posts do
 
   alias InstagramClone.Posts.Post
   alias InstagramClone.Accounts.User
+  alias InstagramClone.Comments.Comment
+  alias InstagramClone.Likes.Like
 
   @doc """
   Returns the list of posts.
@@ -38,6 +40,43 @@ defmodule InstagramClone.Posts do
     |> limit(^per_page)
     |> offset(^((page - 1) * per_page))
     |> order_by(desc: :id)
+    |> Repo.all
+  end
+
+  @doc """
+  Returns the list of paginated posts of a given user id
+  And posts of following list of given user id
+  With user and likes preloaded
+  With 2 most recent comments preloaded with user and likes
+  User, page, and per_page are given with the socket assigns
+
+  ## Examples
+
+      iex> get_accounts_feed(following_list, assigns)
+      [%{photo_url: "", url_id: ""}, ...]
+
+  """
+  def get_accounts_feed(following_list, assigns) do
+    user = assigns.current_user
+    page = assigns.page
+    per_page = assigns.per_page
+    query =
+      from c in Comment,
+      select: %{id: c.id, row_number: over(row_number(), :posts_partition)},
+      windows: [posts_partition: [partition_by: :post_id, order_by: [desc: :id]]]
+    comments_query =
+      from c in Comment,
+      join: r in subquery(query),
+      on: c.id == r.id and r.row_number <= 2
+    likes_query = Like |> select([l], l.user_id)
+
+    Post
+    |> where([p], p.user_id in ^following_list)
+    |> or_where([p], p.user_id == ^user.id)
+    |> limit(^per_page)
+    |> offset(^((page - 1) * per_page))
+    |> order_by(desc: :id)
+    |> preload([:user, likes: ^likes_query, comments: ^{comments_query, [:user, likes: likes_query]}])
     |> Repo.all()
   end
 
@@ -56,13 +95,33 @@ defmodule InstagramClone.Posts do
 
   """
   def get_post!(id) do
+    likes_query = Like |> select([l], l.user_id)
+
     Repo.get!(Post, id)
-    |> Repo.preload([:user, :likes])
+    |> Repo.preload([:user, likes: likes_query])
+  end
+
+  def get_post_feed!(id) do
+    query =
+      from c in Comment,
+      select: %{id: c.id, row_number: over(row_number(), :posts_partition)},
+      windows: [posts_partition: [partition_by: :post_id, order_by: [desc: :id]]]
+    comments_query =
+      from c in Comment,
+      join: r in subquery(query),
+      on: c.id == r.id and r.row_number <= 2
+    likes_query = Like |> select([l], l.user_id)
+
+    Post
+    |> preload([:user, likes: ^likes_query, comments: ^{comments_query, [:user, likes: likes_query]}])
+    |> Repo.get!(id)
   end
 
   def get_post_by_url!(id) do
+    likes_query = Like |> select([l], l.user_id)
+
     Repo.get_by!(Post, url_id: id)
-    |> Repo.preload([:user, :likes])
+    |> Repo.preload([:user, likes: likes_query])
   end
 
   @doc """
@@ -77,12 +136,6 @@ defmodule InstagramClone.Posts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_post(attrs \\ %{}) do
-    %Post{}
-    |> Post.changeset(attrs)
-    |> Repo.insert()
-  end
-
   def create_post(%Post{} = post, attrs \\ %{}, user) do
     post = Ecto.build_assoc(user, :posts, put_url_id(post))
     changeset = Post.changeset(post, attrs)

@@ -64,7 +64,7 @@
       <!-- Action icons section -->
       <div class="flex pl-4 pr-2 pt-2">
         <%= if @current_user do %>
-          <.live_component module={InstagramCloneWeb.PostLive.LikeComponent}
+          <.live_component module={InstagramCloneWeb.LikeComponent}
               id={@post.id}
               liked={@post}
               w_h="w-8 h-8"

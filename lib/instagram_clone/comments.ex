@@ -5,7 +5,7 @@ defmodule InstagramClone.Comments do
 
   import Ecto.Query, warn: false
   alias InstagramClone.Repo
-
+  alias InstagramClone.Likes.Like
   alias InstagramClone.Comments.Comment
 
   @doc """
@@ -21,22 +21,20 @@ defmodule InstagramClone.Comments do
     Repo.all(Comment)
   end
 
-  @doc """
-  Returns paginated comments sorted by current user id or by id if public
-  """
   def list_post_comments(assigns, public: public) do
     user = assigns.current_user
     post_id = assigns.post.id
     per_page = assigns.per_page
     page = assigns.page
+    likes_query = Like |> select([l], l.user_id)
 
     Comment
     |> where(post_id: ^post_id)
     |> get_post_comments_sorting(public, user)
     |> limit(^per_page)
     |> offset(^((page - 1) * per_page))
-    |> preload([:user, :likes])
-    |> Repo.all()
+    |> preload([:user, likes: ^likes_query])
+    |> Repo.all
   end
 
   defp get_post_comments_sorting(module, public, user) do
@@ -62,8 +60,10 @@ defmodule InstagramClone.Comments do
 
   """
   def get_comment!(id) do
+    likes_query = Like |> select([l], l.user_id)
+
     Repo.get!(Comment, id)
-    |> Repo.preload([:user, :likes])
+    |> Repo.preload([:user, likes: likes_query])
   end
 
   @doc """
@@ -78,34 +78,22 @@ defmodule InstagramClone.Comments do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_comment(attrs \\ %{}) do
-    %Comment{}
-    |> Comment.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  @doc """
-  Creates a comment and updates total comments count in post
-  Returns the comment created with likes preloaded
-  """
   def create_comment(user, post, attrs \\ %{}) do
     update_total_comments = post.__struct__ |> where(id: ^post.id)
     comment_attrs = %Comment{} |> Comment.changeset(attrs)
-
     comment =
       comment_attrs
       |> Ecto.Changeset.put_assoc(:user, user)
       |> Ecto.Changeset.put_assoc(:post, post)
 
     Ecto.Multi.new()
-    |> Ecto.Multi.update_all(:update_total_comments, update_total_comments,
-      inc: [total_comments: 1]
-    )
+    |> Ecto.Multi.update_all(:update_total_comments, update_total_comments, inc: [total_comments: 1])
     |> Ecto.Multi.insert(:comment, comment)
     |> Repo.transaction()
     |> case do
       {:ok, %{comment: comment}} ->
-        comment |> Repo.preload(:likes)
+        likes_query = Like |> select([l], l.user_id)
+        comment |> Repo.preload(likes: likes_query)
     end
   end
 

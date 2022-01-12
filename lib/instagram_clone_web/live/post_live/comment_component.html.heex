@@ -20,7 +20,7 @@
   </div>
 
   <%= if @current_user do %>
-    <.live_component module={InstagramCloneWeb.PostLive.LikeComponent}
+    <.live_component module={InstagramCloneWeb.LikeComponent}
         id={"like-compoent-#{@comment.id}"}
         liked={@comment}
         w_h="w-6 h-6",
