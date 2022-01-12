@@ -5,15 +5,20 @@ defmodule InstagramCloneWeb.PageLive do
   alias InstagramClone.Accounts
   alias InstagramCloneWeb.UserLive.FollowComponent
   alias InstagramClone.Posts
+  alias InstagramClone.Posts.Post
   alias InstagramCloneWeb.Live.LikeComponent
 
   @impl true
   def mount(_params, session, socket) do
     socket = assign_defaults(session, socket)
+    if connected?(socket), do: Posts.subscribe
 
     {:ok,
-     socket
-     |> assign(page: 1, per_page: 15), temporary_assigns: [user_feed: []]}
+      socket
+      |> assign(page_title: "InstagraClone")
+      |> assign(new_posts_added: false)
+      |> assign(page: 1, per_page: 15),
+      temporary_assigns: [user_feed: []]}
   end
 
   @impl true
@@ -63,6 +68,15 @@ defmodule InstagramCloneWeb.PageLive do
     {:noreply, socket}
   end
 
+  @impl true
+  def handle_info(%{event: "new_post", payload: %{post: %Post{user_id: post_user_id}}}, socket) do
+    if post_user_id in socket.assigns.following_list do
+      {:noreply, socket |> assign(new_posts_added: true)}
+    else
+      {:noreply, socket}
+    end
+  end
+
   defp apply_action(current_user) do
     if !current_user, do: :root_path
   end
@@ -70,11 +84,13 @@ defmodule InstagramCloneWeb.PageLive do
   defp assign_posts(socket) do
     if socket.assigns.current_user do
       current_user = socket.assigns.current_user
-      random_5_users = Accounts.random_5(current_user)
       following_list = Accounts.get_following_list(current_user)
+      accounts_feed_total = Posts.get_accounts_feed_total(following_list, socket.assigns)
+      random_5_users = Accounts.random_5(current_user)
 
       socket
       |> assign(following_list: following_list)
+      |> assign(accounts_feed_total: accounts_feed_total)
       |> assign(users: random_5_users)
       |> assign_user_feed()
     else

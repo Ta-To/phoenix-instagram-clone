@@ -11,6 +11,14 @@ defmodule InstagramClone.Posts do
   alias InstagramClone.Comments.Comment
   alias InstagramClone.Likes.Like
 
+  @pubsub_topic "new_posts_added"
+
+  def pubsub_topic, do: @pubsub_topic
+
+  def subscribe do
+    InstagramCloneWeb.Endpoint.subscribe(@pubsub_topic)
+  end
+
   @doc """
   Returns the list of posts.
 
@@ -85,6 +93,17 @@ defmodule InstagramClone.Posts do
       comments: ^{comments_query, [:user, likes: likes_query]}
     ])
     |> Repo.all()
+  end
+
+
+  def get_accounts_feed_total(following_list, assigns) do
+    user = assigns.current_user
+
+    Post
+    |> where([p], p.user_id in ^following_list)
+    |> or_where([p], p.user_id == ^user.id)
+    |> select([p], count(p.id))
+    |> Repo.one()
   end
 
   @doc """
