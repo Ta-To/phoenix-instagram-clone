@@ -60,7 +60,7 @@ defmodule InstagramClone.Posts do
     |> limit(^per_page)
     |> offset(^((page - 1) * per_page))
     |> order_by(desc: :id)
-    |> Repo.all
+    |> Repo.all()
   end
 
   @doc """
@@ -107,7 +107,6 @@ defmodule InstagramClone.Posts do
     ])
     |> Repo.all()
   end
-
 
   def get_accounts_feed_total(following_list, assigns) do
     user = assigns.current_user
@@ -250,7 +249,7 @@ defmodule InstagramClone.Posts do
   end
 
   def bookmarked?(user_id, post_id) do
-    Repo.get_by(Bookmarks, [user_id: user_id, post_id: post_id])
+    Repo.get_by(Bookmarks, user_id: user_id, post_id: post_id)
   end
 
   def create_bookmark(user, post) do
@@ -268,6 +267,6 @@ defmodule InstagramClone.Posts do
     Bookmarks
     |> where(user_id: ^user.id)
     |> select([b], count(b.id))
-    |> Repo.one
+    |> Repo.one()
   end
 end

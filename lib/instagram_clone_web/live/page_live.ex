@@ -11,14 +11,13 @@ defmodule InstagramCloneWeb.PageLive do
   @impl true
   def mount(_params, session, socket) do
     socket = assign_defaults(session, socket)
-    if connected?(socket), do: Posts.subscribe
+    if connected?(socket), do: Posts.subscribe()
 
     {:ok,
-      socket
-      |> assign(page_title: "InstagraClone")
-      |> assign(new_posts_added: false)
-      |> assign(page: 1, per_page: 15),
-      temporary_assigns: [user_feed: []]}
+     socket
+     |> assign(page_title: "InstagraClone")
+     |> assign(new_posts_added: false)
+     |> assign(page: 1, per_page: 15), temporary_assigns: [user_feed: []]}
   end
 
   @impl true
