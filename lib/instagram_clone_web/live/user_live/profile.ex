@@ -47,9 +47,29 @@ defmodule InstagramCloneWeb.UserLive.Profile do
   defp apply_action(socket, nil), do: apply_action(socket, :index)
 
   defp apply_action(socket, :index) do
+    selected_link_styles = "text-gray-600 border-t-2 border-black -mt-0.5"
     live_action = get_live_action(socket.assigns.user, socket.assigns.current_user)
 
-    socket |> assign(live_action: live_action)
+    socket
+    |> assign(selected_index: selected_link_styles)
+    |> assign(selected_saved: "text-gray-400")
+    |> assign(saved_page?: false)
+    |> assign(live_action: live_action)
+    |> show_saved_profile_link?()
+    |> assign_posts()
+  end
+
+  defp apply_action(socket, :saved) do
+    selected_link_styles = "text-gray-600 border-t-2 border-black -mt-0.5"
+
+    socket
+    |> assign(selected_index: "text-gray-400")
+    |> assign(selected_saved: selected_link_styles)
+    |> assign(live_action: :edit_profile)
+    |> assign(saved_page?: true)
+    |> show_saved_profile_link?()
+    |> redirect_when_not_my_saved()
+    |> assign_saved_posts()
   end
 
   defp apply_action(socket, :following) do
@@ -82,6 +102,17 @@ defmodule InstagramCloneWeb.UserLive.Profile do
     )
   end
 
+  defp assign_saved_posts(socket) do
+    socket
+    |> assign(posts:
+      Posts.list_saved_profile_posts(
+        page: socket.assigns.page,
+        per_page: socket.assigns.per_page,
+        user_id: socket.assigns.user.id
+      )
+    )
+  end
+
   defp load_posts(socket) do
     total_posts = socket.assigns.user.posts_count
     page = socket.assigns.page
@@ -94,6 +125,44 @@ defmodule InstagramCloneWeb.UserLive.Profile do
       socket
       |> update(:page, &(&1 + 1))
       |> assign_posts()
+    end
+  end
+
+  defp get_total_posts_count(socket) do
+    if socket.assigns.saved_page? do
+      Posts.count_user_saved(socket.assigns.user)
+    else
+      socket.assigns.user.posts_count
+    end
+  end
+
+  defp get_posts(socket) do
+    if socket.assigns.saved_page? do
+      assign_saved_posts(socket)
+    else
+      assign_posts(socket)
+    end
+  end
+
+  defp redirect_when_not_my_saved(socket) do
+    username = socket.assigns.current_user.username
+
+    if socket.assigns.my_saved? do
+      socket
+    else
+      socket
+      |> push_redirect(to: Routes.live_path(socket, InstagramCloneWeb.UserLive.Profile, username))
+    end
+  end
+
+  defp show_saved_profile_link?(socket) do
+    user = socket.assigns.user
+    current_user = socket.assigns.current_user
+
+    if current_user && current_user.id == user.id do
+      socket |> assign(my_saved?: true)
+    else
+      socket |> assign(my_saved?: false)
     end
   end
 end

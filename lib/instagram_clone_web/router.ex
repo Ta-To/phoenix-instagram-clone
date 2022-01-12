@@ -74,6 +74,7 @@ defmodule InstagramCloneWeb.Router do
     live "/accounts/password/change", UserLive.PassSettings
     live "/:username/following", UserLive.Profile, :following
     live "/:username/followers", UserLive.Profile, :followers
+    live "/:username/saved", UserLive.Profile, :saved
     live "/p/new", PostLive.New
   end
 
