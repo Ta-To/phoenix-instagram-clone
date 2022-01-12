@@ -56,7 +56,7 @@ defmodule InstagramCloneWeb.UserLive.Settings do
         {:noreply,
          socket
          |> put_flash(:info, "User updated successfully")
-         |> push_redirect(to: Routes.live_path(socket, InstagramWeb.UserLive.Settings))}
+         |> push_redirect(to: Routes.live_path(socket, __MODULE__))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :changeset, changeset)}
